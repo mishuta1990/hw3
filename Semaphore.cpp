@@ -6,17 +6,16 @@ Semaphore::Semaphore() {
 	// initilaize the condition variable
 	pthread_cond_init(&(this->_cond),NULL);
 	// initilaize the mutex variable
-	pthread_mutexattr_t attr = PTHREAD_MUTEX_ERRORCHECK;
-
-	pthread_mutex_init(&(this->_mutex), &attr);
+	_mutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER;
+	//pthread_mutex_init(&(this->_mutex), &attr);
 }
 
 Semaphore::Semaphore(unsigned val) {
-	counter = (int) val;
+	counter =  val;
 	// initilaize the condition variable
 	pthread_cond_init(&(this->_cond), NULL);
 	// initilaize the mutex variable
-	pthread_mutex_init(&(this->_mutex), PTHREAD_MUTEX_ERRORCHECK);
+	_mutex = PTHREAD_ERRORCHECK_MUTEX_INITIALIZER;
 }
 
 void Semaphore::up() {

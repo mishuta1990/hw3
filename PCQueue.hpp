@@ -4,21 +4,28 @@
 #include "Semaphore.hpp"
 
 // Single Producer - Multiple Consumer queue
-template <typename T>class PCQueue
-{
+template <typename T> 
+class PCQueue {
 
 public:
+	PCQueue() {
+		this->_sem_items = Semaphore();
+		this->_sem_producer = Semaphore(1);
+	}
 	// Blocks while queue is empty. When queue holds items, allows for a single
 	// thread to enter and remove an item from the front of the queue and return it. 
 	// Assumes multiple consumers.
 	// ==== this is like read ====
 	T pop() {
 		_sem_items.down();
-		return _items.pop();
+		T item = _items.front();
+		_items.pop();
+		return item;
 	}
 
 	// Allows for producer to enter with *minimal delay* and push items to back of the queue.
 	// Hint for *minimal delay* - Allow the consumers to delay the producer as little as possible.  
+	
 	// Assumes single producer 
 	// ==== this is like write ====
 	void push(const T& item) {
@@ -29,11 +36,10 @@ public:
 		return;
 	}
 
-
 private:
 
 	
-	Semaphore _sem_producer(1);
+	Semaphore _sem_producer;
 	Semaphore _sem_items; // sem with initial 0
 	
 	std::queue<T> _items;
