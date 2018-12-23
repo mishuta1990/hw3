@@ -1,5 +1,6 @@
 #ifndef _QUEUEL_H
 #define _QUEUEL_H
+
 #include "Headers.hpp"
 #include "Semaphore.hpp"
 
@@ -43,6 +44,8 @@ private:
 	Semaphore _sem_items; // sem with initial 0
 	
 	std::queue<T> _items;
+	pthread_mutex_t _mutex;
+
 	// Add your class memebers here
 };
 // Recommendation: Use the implementation of the std::queue for this exercise
