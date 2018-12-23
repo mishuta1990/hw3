@@ -66,4 +66,22 @@ protected: // All members here are protected, instead of private for testing pur
 	// TODO: Add in your variables and synchronization primitives  
 
 };
+
+class GameThread : public Thread {
+public:
+	GameThread(uint thread_id, Game * const game) : Thread(thread_id), _game(game) {}
+	
+	void thread_workload() override {
+		while (true) {
+			thread_job_t _job = this->_game->get_task();
+			auto job_start = std::chrono::system_clock::now();
+			update_matrix(_game->from_matrix(), _game->to_matrix(),_job.begin_row,_job.end_row,_job.cols,_job.rows);
+			auto job_end = std::chrono::system_clock::now();
+			_game->notify_task_done();
+		}
+	}
+	
+private:
+	Game* _game;
+};
 #endif

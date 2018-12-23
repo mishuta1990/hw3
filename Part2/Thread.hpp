@@ -1,7 +1,6 @@
 #ifndef __THREAD_H
 #define __THREAD_H
 #include "Headers.hpp"
-#include "Game.hpp"
 
 void update_matrix(bool ** current_matrix, bool ** next_matrix, int begin_row, int end_row, int num_cols, int num_rows) {
 	for (int i = begin_row; i < end_row; ++i) {
@@ -85,24 +84,6 @@ protected:
 private:
 	static void * entry_func(void * thread) { ((Thread *)thread)->thread_workload(); return NULL; }
 	pthread_t m_thread;
-};
-
-class GameThread : public Thread {
-public:
-	GameThread(uint thread_id, Game * const game) : Thread(thread_id), _game(game) {}
-	
-	void thread_workload() override {
-		while (true) {
-			thread_job_t _job = this->_game->get_task();
-			auto job_start = std::chrono::system_clock::now();
-			update_matrix(_game->from_matrix(), _game->to_matrix(),_job.begin_row,_job.end_row,_job.cols,_job.rows);
-			auto job_end = std::chrono::system_clock::now();
-			_game->notify_task_done();
-		}
-	}
-	
-private:
-	Game* _game;
 };
 
 #endif
