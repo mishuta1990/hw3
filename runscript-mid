@@ -1,0 +1,11 @@
+#!/bin/bash 
+	
+if [  -f results.csv ]; then
+    rm results.csv
+fi
+COUNTER=1
+while [  $COUNTER -lt 101 ]; do
+        echo running with the parameter of $COUNTER
+        ./GameOfLife mid.txt 100 "$COUNTER" Y N
+	let COUNTER=COUNTER+1 
+ done

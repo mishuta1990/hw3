@@ -103,6 +103,7 @@ void Game::_step(uint curr_gen) {
 		else {
 			_job.end_row = _job.begin_row + gap;
 		}
+		_job.rows = this->m_rows;
 		_job.cols = this->m_cols;
 		_tasks.push(_job);
 	}
@@ -199,9 +200,9 @@ inline static void print_board(const char* header, Game * const game) {
 	if(game->print()){ 
 
 		// Clear the screen, to create a running animation 
-		if(game->interactive()) {
-			system("clear");
-		}
+//		if(game->interactive()) {
+//			system("clear");
+//		}
 		// Print small header if needed
 		if (header != NULL) {
 			cout << "<------------" << header << "------------>" << endl;
@@ -212,7 +213,7 @@ inline static void print_board(const char* header, Game * const game) {
 		for (uint i = 0; i < game->num_rows(); ++i) {
 			cout << u8"║";
 			for (uint j = 0; j < game->num_cols(); ++j) {
-				bool_mat * _mat = game->to_matrix();
+				bool_mat * _mat = game->from_matrix();
 				cout << ((*_mat)[i][j] ? u8"█" : u8"░");
 			}
 			cout << u8"║" << endl;
@@ -223,7 +224,7 @@ inline static void print_board(const char* header, Game * const game) {
 		// Display for GEN_SLEEP_USEC micro-seconds on screen 
 		if (game->interactive())
 			//usleep(GEN_SLEEP_USEC);
-			Sleep(GEN_SLEEP_USEC);
+			usleep(GEN_SLEEP_USEC);
 
 	}
 
@@ -242,6 +243,5 @@ inline static void print_board(const char* header, Game * const game) {
 		}
 		cout << u8"╚" << string(u8"═") * field_width << u8"╝" << endl;
 */ 
-
 
 

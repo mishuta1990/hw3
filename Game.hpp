@@ -5,8 +5,8 @@
 #include "Headers.hpp"
 #include "Thread.hpp"
 #include "PCQueue.hpp"
+#include <unistd.h>
 
-#include <Windows.h>
 /*--------------------------------------------------------------------------------
 								  Auxiliary Structures
 --------------------------------------------------------------------------------*/

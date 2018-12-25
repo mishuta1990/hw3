@@ -21,12 +21,6 @@
 #include <algorithm>
 #include <numeric>  
 
-
-// Threads & Synchronization 
-#define HAVE_STRUCT_TIMESPEC
-
-#include <Windows.h>
-
 #include <pthread.h>
 
 /*--------------------------------------------------------------------------------

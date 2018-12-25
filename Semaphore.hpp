@@ -15,6 +15,7 @@ public:
 private:
 	int counter;
 	pthread_mutex_t _mutex;
+	pthread_mutexattr_t _attr;
 	pthread_cond_t _cond;
 };
 

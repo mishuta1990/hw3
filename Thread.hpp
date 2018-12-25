@@ -42,7 +42,7 @@ static void update_matrix(bool_mat * current_matrix, bool_mat * next_matrix, int
 			}
 			
 			int sum = _up + _up_l + _up_r + _down + _down_l + _down_r + _left + _right;
-			if (sum == 2 || sum == 3) {
+			if ((sum == 2 && (*current_matrix)[i][j] == true) || sum == 3) {
 				(*next_matrix)[i][j] = true;
 			}
 			else {
