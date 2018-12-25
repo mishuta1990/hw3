@@ -1,9 +1,11 @@
 #ifndef __THREAD_H
 #define __THREAD_H
 
+
 #include "Headers.hpp"
 
-void update_matrix(bool_mat * current_matrix, bool_mat * next_matrix, int begin_row, int end_row, int num_cols, int num_rows) {
+#if 1
+static void update_matrix(bool_mat * current_matrix, bool_mat * next_matrix, int begin_row, int end_row, int num_cols, int num_rows) {
 	for (int i = begin_row; i < end_row; ++i) {
 		for (int j = 0; j < num_cols; ++j) {
 			int _up = 0;
@@ -14,28 +16,28 @@ void update_matrix(bool_mat * current_matrix, bool_mat * next_matrix, int begin_
 			int _down_r = 0;
 			int _left = 0;
 			int _right = 0;
-			if (i+1 != num_rows-1) {
+			if (i+1 < num_rows) {
 				_up = (*current_matrix)[i + 1][j];
-				if (j != 0 ) {
+				if (j > 0 ) {
 					_up_l = (*current_matrix)[i + 1][j-1];
 				}
-				if (j != num_cols-1 ) {
+				if (j + 1 < num_cols ) {
 					_up_r = (*current_matrix)[i + 1][j+1];
 				}
 			}
-			if (i-1 != 0) {
+			if (i > 0) {
 				_down = (*current_matrix)[i - 1][j];
-				if (j != 0 ) {
+				if (j > 0 ) {
 					_down_l = (*current_matrix)[i - 1][j-1];
 				}
-				if (j != num_cols-1 ) {
+				if (j + 1 < num_cols ) {
 					_down_r = (*current_matrix)[i - 1][j+1];
 				}
 			}
-			if (j != 0 ) {
+			if (j > 0 ) {
 				_left = (*current_matrix)[i][j-1];
 			}
-			if (j != num_cols-1 ) {
+			if (j + 1 < num_cols ) {
 				_right = (*current_matrix)[i][j+1];
 			}
 			
@@ -51,6 +53,8 @@ void update_matrix(bool_mat * current_matrix, bool_mat * next_matrix, int begin_
 	return;
 }
 
+#endif
+
 class Thread
 {
 public:
@@ -64,7 +68,7 @@ public:
 	/** Returns true if the thread was successfully started, false if there was an error starting the thread */
 	bool start()
 	{
-		return (pthread_create(&m_thread, NULL, entry_func, NULL) == 0);
+		return (pthread_create(&m_thread, NULL, entry_func, this) == 0);
 	}
 
 	/** Will not return until the internal thread has exited. */

@@ -12,6 +12,7 @@ public:
 	PCQueue() {
 		this->_sem_items = Semaphore();
 		this->_sem_producer = Semaphore(1);
+		pthread_mutex_init(&this->_mutex, NULL);
 	}
 	// Blocks while queue is empty. When queue holds items, allows for a single
 	// thread to enter and remove an item from the front of the queue and return it. 
@@ -19,8 +20,10 @@ public:
 	// ==== this is like read ====
 	T pop() {
 		_sem_items.down();
+		pthread_mutex_lock(&this->_mutex);
 		T item = _items.front();
 		_items.pop();
+		pthread_mutex_unlock(&this->_mutex);
 		return item;
 	}
 
@@ -49,4 +52,5 @@ private:
 	// Add your class memebers here
 };
 // Recommendation: Use the implementation of the std::queue for this exercise
+
 #endif

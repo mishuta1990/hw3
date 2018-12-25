@@ -45,13 +45,11 @@ public:
 	const uint num_cols() const;
 	const uint num_rows() const;
 
-
-	void copy_matrix(bool ** from, bool ** to);
 	bool_mat * from_matrix();
 	bool_mat * to_matrix();
 	thread_job get_task();
 	void notify_task_done();
-	void update_tile_hist(uint gen_num, std::chrono::duration<float> delta);
+	void update_tile_hist(uint gen_num, const float delta);
 	uint m_current_gen;
 
 protected: // All members here are protected, instead of private for testing purposes
@@ -66,7 +64,7 @@ protected: // All members here are protected, instead of private for testing pur
 	bool interactive_on; // Controls interactive mode - that means, prints the board as an animation instead of a simple dump to STDOUT 
 	bool print_on; // Allows the printing of the board. Turn this off when you are checking performance (Dry 3, last question)
 	uint m_thread_num; 			 // Effective number of threads = min(thread_num, field_height)
-	vector<float> m_tile_hist; 	 // Shared Timing history for tiles: First m_gen_num cells are the calculation durations for tiles in generation 1 and so on. 
+	vector<float> m_tile_hist; 	 // Shared Timing history for tiles: First m_thread_num cells are the calculation durations for tiles in generation 1 and so on. 
 							   	 // Note: In your implementation, all m_thread_num threads must write to this structure. 
 	vector<float> m_gen_hist;  	 // Timing history for generations: x=m_gen_hist[t] iff generation t was calculated in x microseconds
 	vector<Thread*> m_threadpool; // A storage container for your threads. This acts as the threadpool. 
@@ -76,7 +74,7 @@ protected: // All members here are protected, instead of private for testing pur
 	bool_mat * _to_matrix;		// next matrix
 	PCQueue<thread_job> _tasks;	// thread tasks pcqueue
 	uint num_tasks_done;		// counter for number of tasks done
-	
+	pthread_mutex_t _mutex;
 	// TODO: Add in your variables and synchronization primitives  
 
 };
@@ -95,11 +93,11 @@ public:
 			update_matrix(_game->from_matrix(), _game->to_matrix(),_job.begin_row,_job.end_row,_job.cols,_job.rows);
 			auto job_end = std::chrono::system_clock::now();
 			std::chrono::duration<float> delta = job_end - job_start;
-			_game->update_tile_hist(_game->m_current_gen, delta);
+			_game->update_tile_hist(_game->m_current_gen, delta.count());
 			_game->notify_task_done();
 		}
 	}
-	
+	~GameThread() {	}
 private:
 	Game* _game;
 };

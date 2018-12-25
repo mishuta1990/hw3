@@ -1,6 +1,5 @@
 #include "Game.hpp"
 
-#define usleep Sleep
 /*--------------------------------------------------------------------------------
 								
 --------------------------------------------------------------------------------*/
@@ -22,7 +21,7 @@ Game::Game(game_params _params) {
 	this->_to_matrix = NULL;
 	this->m_thread_num = _params.n_thread;
 	this->num_tasks_done = 0;
-	
+	pthread_mutex_init(&this->_mutex, NULL);
 }
 
 
@@ -93,6 +92,8 @@ void Game::_init_game() {
 void Game::_step(uint curr_gen) {
 	// Push jobs to queue
 		int gap = m_rows / m_thread_num;
+		num_tasks_done = 0;
+
 	for (uint i = 0; i < m_thread_num; ++i) {
 		thread_job _job;
 		_job.begin_row = i * gap;
@@ -105,13 +106,13 @@ void Game::_step(uint curr_gen) {
 		_job.cols = this->m_cols;
 		_tasks.push(_job);
 	}
-	num_tasks_done = 0;
-	
 	// Wait for the workers to finish calculating 
-	while (num_tasks_done < m_thread_num);
+	while (num_tasks_done < m_thread_num) continue;
 	
 	// Swap pointers between current and next field 
+	bool_mat * _temp = _from_matrix;
 	_from_matrix = _to_matrix;
+	_to_matrix = _temp;
 }
 
 void Game::_destroy_game(){
@@ -119,15 +120,16 @@ void Game::_destroy_game(){
 	
 	delete this->_from_matrix;
 	delete this->_to_matrix;
-	
+#if 1
 	for (std::vector<Thread*>::iterator iter = this->m_threadpool.begin();
 		iter != this->m_threadpool.end(); ++iter) {
 		Thread * _thread = *iter;
-		this->m_threadpool.erase(iter);
+		//this->m_threadpool.erase(iter);
 		delete _thread;
 		_thread = NULL;
 	}
-	
+	this->m_threadpool.clear();
+#endif
 	// Destroys board and frees all threads and resources 
 	// Not implemented in the Game's destructor for testing purposes. 
 	// Testing of your implementation will presume all threads are joined here
@@ -146,8 +148,10 @@ uint Game::thread_num() const {
 }
 
 
-void Game::update_tile_hist(uint gen_num, std::chrono::duration<float> delta) {
-	this->m_tile_hist[gen_num] += delta.count();
+void Game::update_tile_hist(uint gen_num, const float delta) {
+	pthread_mutex_lock(&this->_mutex);
+	this->m_tile_hist.push_back(delta);
+	pthread_mutex_unlock(&this->_mutex);
 }
 
 
@@ -163,15 +167,6 @@ bool_mat * Game::from_matrix() {
 
 bool_mat * Game::to_matrix() {
 	return this->_to_matrix;
-}
-
-void Game::copy_matrix(bool ** from, bool ** to) {
-	for (uint i = 0; i < m_rows; ++i) {
-		for (uint j = 0; j < m_cols; ++j) {
-			to[i][j] = from[i][j];
-		}
-	}
-	return;
 }
 
 
@@ -191,7 +186,9 @@ const uint Game::num_rows() const {
 }
 
 void Game::notify_task_done() {
+	pthread_mutex_lock(&this->_mutex);
 	num_tasks_done++;
+	pthread_mutex_unlock(&this->_mutex);
 }
 
 /*--------------------------------------------------------------------------------
@@ -224,13 +221,13 @@ inline static void print_board(const char* header, Game * const game) {
 		
 
 		// Display for GEN_SLEEP_USEC micro-seconds on screen 
-		if(game->interactive())
-			usleep(GEN_SLEEP_USEC);
+		if (game->interactive())
+			//usleep(GEN_SLEEP_USEC);
+			Sleep(GEN_SLEEP_USEC);
 
 	}
 
 }
-
 
 /* Function sketch to use for printing the board. You will need to decide its placement and how exactly 
 	to bring in the field's parameters. 
