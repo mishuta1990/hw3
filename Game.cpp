@@ -121,11 +121,24 @@ void Game::_destroy_game(){
 	
 	delete this->_from_matrix;
 	delete this->_to_matrix;
+
+		for (uint i = 0; i < m_thread_num; ++i) {
+		thread_job _job;
+		_job.begin_row = -1;
+		if (i == m_thread_num - 1) {
+			_job.end_row = - 1;
+		}
+		else {
+			_job.end_row = _job.begin_row + gap;
+		}
+		_job.rows = -1;
+		_job.cols = -1;
+		_tasks.push(_job);
+	}
 #if 1
 	for (std::vector<Thread*>::iterator iter = this->m_threadpool.begin();
 		iter != this->m_threadpool.end(); ++iter) {
 		Thread * _thread = *iter;
-		//this->m_threadpool.erase(iter);
 		delete _thread;
 		_thread = NULL;
 	}

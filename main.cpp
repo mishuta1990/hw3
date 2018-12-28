@@ -8,17 +8,9 @@ static void calc_and_append_statistics(uint n_threads, const vector<float>& gen_
 										Main
 --------------------------------------------------------------------------------*/
 int main(int argc, char **argv) {
-//int main(){
 
-	//game_params _params;
-	//_params.filename = "small.txt";
-	//_params.n_gen = 10;
-	//_params.n_thread = 5;
-	//_params.interactive_on = false;
-	//_params.print_on = true;
 	game_params params = parse_input_args(argc, argv);
 	Game g(params);
-	//Game g(_params);
 	g.run();
 	calc_and_append_statistics(g.thread_num(), g.gen_hist(), g.tile_hist());
 	return 0;
