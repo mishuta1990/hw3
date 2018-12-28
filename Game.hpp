@@ -88,7 +88,6 @@ public:
 		while (true) {
 			// pops task from PCQUEUE task or wait's until one is there
 			thread_job_t _job = this->_game->get_task();
-			if (_job.begin_row == -1) return; // finish the thread
 			auto job_start = std::chrono::system_clock::now();
 			// here the new matrix will be updated
 			update_matrix(_game->from_matrix(), _game->to_matrix(),_job.begin_row,_job.end_row,_job.cols,_job.rows);
